@@ -1,0 +1,98 @@
+.popup-container {
+    background-color: #f9f9f9;
+    padding: 10px;
+    width: 700px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.popup-header {
+    background-color: #597c47;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    color: white;
+    width: 95%;
+}
+
+.popup-title {
+    margin: 0;
+    font-size: 20px;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Keep URL and note sections separate */
+    width: 98%;
+}
+
+.url-container {
+    flex: 1;
+    padding: 2px;
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+}
+
+input[type='text'] {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 15px; /* Increased margin for separation */
+}
+
+button {
+    padding: 10px 23px;
+    margin: auto!important; /* Adjusted margin with !important for separation */
+    border: none;
+    border-radius: 25px; /* Adjusted border-radius */
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+}
+
+
+.clear-button {
+    background-color: #FFD700;
+    color: white;
+}
+
+.clear-button:hover {
+    background-color: #CC9933;
+}
+
+.copy-button {
+    background-color: #87ae73;
+    color: white;
+}
+
+.copy-button:hover {
+    background-color: #009473;
+}
+
+.note-container {
+    flex: 1;
+    padding: 10px;
+    width: 48%;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    height: 350px;
+}

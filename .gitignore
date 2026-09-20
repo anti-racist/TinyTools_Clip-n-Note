@@ -6,3 +6,7 @@
 
 # Ignore the 'icons' directory
 icons/
+
+# The test harness lives here but is not part of the extension
+tests/
+dump.html

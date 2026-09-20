@@ -1,16 +1,13 @@
-
 {
   "manifest_version": 3,
   "name": "Clip'n'Note",
-  "description": "Where Ideas Meet Organization",
-  "version": "1.0",
+  "description": "A notepad that stays open, and a searchable list of the snippets you paste over and over.",
+  "version": "2.0",
   "permissions": [
     "storage",
-    "clipboardWrite"
+    "clipboardWrite",
+    "activeTab"
   ],
-  "background": {
-    "service_worker": "background.js"
-  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

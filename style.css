@@ -1,98 +1,350 @@
-.popup-container {
-    background-color: #f9f9f9;
-    padding: 10px;
-    width: 700px;
-    border-radius: 4px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* Every colour here was measured against WCAG 2.2 and against simulated
+   protanopia, deuteranopia and tritanopia. Before changing one, re-measure:
+   text needs 4.5:1, a control's own boundary needs 3:1, and the measurement
+   has to hold under all three simulations, not just normal vision. */
+:root {
+  --paper:    #f7f4ed;  /* 鱼肚白 */
+  --mount:    #bdcbd2;  /* 影青. White cards sit 1.64:1 on it, which is fine
+                           only because a card is not a control and 1.4.11
+                           does not ask anything of it - the card's own edge
+                           is what makes it a card here, see .card's shadow.
+                           Everything 1.4.11 does ask about - the focus ring,
+                           the picked row - is measured against this. */
+  --card:     #ffffff;
+  --ink:      #22211c;
+  --muted:    #6b675c;  /* 5.65:1 on white, 5.14:1 on paper */
+  --dark:     #1661ab;  /* 靛青 — the filled primary, the focus stroke, the
+                           toast and the menu glyph. One pigment: the open
+                           clip's wash runs out into this exact colour */
+  --danger:   #981e22;  /* 赤, darkened: #c3272b drops to 3.40:1 under tritan */
+  --notice:   #f7e8aa;  /* 杏仁黄, light enough to read as tinted paper */
+  --hairline: #e2ddd0;
+  --pick-a:   #1661ab;  /* 靛青, where the stroke starts - the button's colour */
+  --pick-b:   #1a3a5f;  /* 青黛, where it sinks to */
+  --pick-sub: #d8e7f2;  /* 4.71:1 on the paler end of the two */
 }
 
-.popup-header {
-    background-color: #597c47;
-    padding: 10px;
-    border-radius: 6px;
-    text-align: center;
-    color: white;
-    width: 95%;
+* { box-sizing: border-box; }
+
+/* Several things here set `display`, which would otherwise beat the
+   browser's own rule for the hidden attribute and leave them on screen. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
 }
 
-.popup-title {
-    margin: 0;
-    font-size: 20px;
+.vh {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
 
-.content-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between; /* Keep URL and note sections separate */
-    width: 98%;
+.popup {
+  width: 640px; height: 470px;
+  padding: 16px;
+  display: flex; flex-direction: row; gap: 14px;
 }
 
-.url-container {
-    flex: 1;
-    padding: 2px;
-    width: 48%;
-    display: flex;
-    flex-direction: column;
+/* ---------- left column: the notes ---------- */
+
+.clips {
+  position: relative;
+  width: 292px;
+  background: var(--mount);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
 }
 
-input[type='text'] {
-    width: 100%;
-    padding: 8px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: 2px solid #ddd;
-    border-radius: 4px;
+/* No line: on the 影青 mount a white field reads as a field, and it carries
+   the word Search inside it. Same for the two sheets below, which are lifted
+   off the paper by a shadow rather than outlined. */
+#q {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+  width: 100%; height: 40px;
+  background: var(--card);
+  border: none;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-family: inherit; font-size: 15px; color: var(--ink);
 }
 
-.button-container {
-    text-align: center;
-    margin-top: 15px; /* Increased margin for separation */
+::placeholder { color: var(--muted); opacity: 1; }
+
+.listwrap {
+  position: relative;
+  flex-grow: 1; min-height: 0;
+  display: flex; flex-direction: column;
 }
 
-button {
-    padding: 10px 23px;
-    margin: auto!important; /* Adjusted margin with !important for separation */
-    border: none;
-    border-radius: 25px; /* Adjusted border-radius */
-    cursor: pointer;
-    font-size: 18px;
-    transition: background-color 0.3s;
+.list {
+  flex-grow: 1; min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  /* Coming to rest on a whole card means the top edge never cuts one in half,
+     so nothing has to be blurred to hide the cut. A part-shown card at the
+     bottom is then the only thing that says the list runs on. */
+  scroll-snap-type: y proximity;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.list::-webkit-scrollbar { width: 0; height: 0; }
+
+.card {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  width: 100%; text-align: left;
+  background: var(--card);
+  border: none; border-radius: 9px;
+  /* The ground is pale, so the card's edge comes from this ring rather than
+     from a brightness difference. At 4% it disappears here; at 14% it reads
+     without becoming a line. */
+  box-shadow: 0 1px 2px rgba(34, 33, 28, 0.14), 0 0 0 1px rgba(34, 33, 28, 0.14);
+  padding: 9px 11px;
+  font-family: inherit;
+  display: flex; align-items: center; gap: 8px;
 }
 
+/* One pigment, two depths: the stroke starts on the button's own 靛青 and
+   sinks into 青黛. Unlike every pale option this needs no argument - 6.30:1
+   and 11.57:1 against a white card, both well past the 3:1 that 1.4.11 asks
+   of a state, and 5.88:1 for the white title at its worst under simulated
+   colour blindness. */
+.card.selected {
+  background: linear-gradient(100deg, var(--pick-a), var(--pick-b));
+  box-shadow: 0 1px 3px rgba(34, 33, 28, 0.22);
+}
+.card.selected .t { color: #ffffff; }
+.card.selected .b { color: var(--pick-sub); }
+.card.selected .dots svg { fill: var(--pick-sub); }
+.card.selected .dots:hover { background: rgba(255, 255, 255, 0.16); }
 
-.clear-button {
-    background-color: #FFD700;
-    color: white;
+.card .main {
+  flex-grow: 1; min-width: 0;
+  text-align: left;
+  background: transparent; border: none; padding: 0;
+  font-family: inherit;
 }
 
-.clear-button:hover {
-    background-color: #CC9933;
+.card .t {
+  font-size: 13.5px; color: var(--ink);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
 }
 
-.copy-button {
-    background-color: #87ae73;
-    color: white;
+.card .b {
+  font-size: 12px; color: var(--muted); margin-top: 2px;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
 }
 
-.copy-button:hover {
-    background-color: #009473;
+.card .b.url { font-family: Consolas, 'Courier New', monospace; }
+
+/* Where the query was found. The pad answers with the browser's own selection
+   instead, since a textarea cannot paint a run of its text. */
+mark {
+  background: var(--notice); color: var(--ink);
+  border-radius: 3px; padding: 0 1px;
 }
 
-.note-container {
-    flex: 1;
-    padding: 10px;
-    width: 48%;
+/* The pad answers with the browser's own selection, so the selection has to
+   be the same yellow the cards mark with - otherwise a hit in the pad is a
+   different colour from a hit in the list. */
+::selection { background: var(--notice); color: var(--ink); }
+
+.card.selected mark { background: #ffffff; }
+
+/* The same yellow the undo strip uses: in this interface yellow means
+   something just happened and is about to stop being true. */
+.card .b.copied {
+  display: inline-block;
+  background: var(--notice); color: var(--ink);
+  border-radius: 4px;
+  padding: 0 6px;
 }
 
-textarea {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    height: 350px;
+.card.selected .b.copied { color: var(--ink); }
+
+.dots {
+  width: 26px; height: 26px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  background: transparent; border: none; border-radius: 7px;
+}
+
+.dots:hover { background: #eef1f2; }
+
+/* ---------- the three-dot menu ---------- */
+
+/* It lives outside .list on purpose: inside, the scroll container would clip
+   it away. */
+.menu {
+  position: absolute;
+  width: 168px;
+  background: var(--card);
+  border: none; border-radius: 10px;
+  box-shadow: 0 8px 22px rgba(34, 33, 28, 0.20), 0 0 0 1px rgba(34, 33, 28, 0.06);
+  padding: 5px;
+  display: flex; flex-direction: column; gap: 2px;
+  z-index: 5;
+}
+
+.menu button {
+  width: 100%; text-align: left;
+  font-family: inherit; font-size: 13px; color: var(--ink);
+  background: transparent; border: none; border-radius: 7px;
+  padding: 8px 10px;
+}
+
+.menu button:hover { background: #eef1f2; }
+.menu .del { color: var(--danger); }
+
+/* ---------- footer of the left column ---------- */
+
+.footline {
+  flex-shrink: 0;
+  display: flex; align-items: baseline; gap: 8px;
+}
+
+/* Ink, not 玄青: on a ground this deep 玄青 falls to 2.8:1, while ink is
+   5.09:1. White would be worse still - mid tones have no room at either end. */
+.count { flex-grow: 1; font-size: 12px; color: var(--ink); }
+
+.padhits {
+  flex-shrink: 0;
+  font-family: inherit; font-size: 12px; color: var(--ink);
+  background: transparent; border: none; padding: 0;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+
+/* The empty state is not a note, so it does not get a card. */
+.hint { font-size: 12.5px; color: var(--ink); padding: 2px; }
+
+/* 杏仁黄 keeps the two voices apart: 赤 is the destructive action in the
+   menu, this is the offer to take it back. It sits at the paper's own
+   lightness, so a full strip of it reads as a tinted slip rather than a
+   warning block. Ink on it is 12.97:1 at worst; white would be 1.20:1, so
+   the text here is always ink. */
+.undo {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--notice); color: var(--ink);
+  font-size: 12px;
+}
+
+.undo span {
+  flex-grow: 1; min-width: 0;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+
+/* A word, not a pill: the strip is already one line tall and does not need a
+   second outline inside it. */
+.undo button {
+  flex-shrink: 0;
+  font-family: inherit; font-size: 12px;
+  color: var(--ink); background: transparent;
+  border: none; padding: 0;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+
+.primary {
+  flex-shrink: 0;
+  width: 100%; height: 36px;
+  font-family: inherit; font-size: 13.5px;
+  color: #ffffff; background: var(--dark);
+  border: none; border-radius: 9px;
+}
+
+/* ---------- right column: the pad ---------- */
+
+.pad { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }
+
+#notePad {
+  flex-grow: 1; min-height: 0; width: 100%;
+  background: var(--card);
+  border: none; border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(34, 33, 28, 0.10), 0 0 0 1px rgba(34, 33, 28, 0.04);
+  padding: 12px;
+  font-family: inherit; font-size: 13.5px; line-height: 1.6; color: var(--ink);
+  resize: none;
+}
+
+/* ---------- right column: a note, when one is picked ---------- */
+
+.detail {
+  flex-grow: 1; min-height: 0;
+  background: var(--card);
+  border: none; border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(34, 33, 28, 0.10), 0 0 0 1px rgba(34, 33, 28, 0.04);
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 9px;
+}
+
+.detail .head {
+  display: flex; align-items: center; gap: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* Sized to its own text, so the focus ring boxes the title rather than the
+   whole header. The ring itself has to stay: it is the only thing telling a
+   keyboard user where they are. */
+.detail .name {
+  flex: 0 1 auto;
+  width: auto; min-width: 8ch; max-width: 100%;
+  field-sizing: content;
+  font-family: inherit; font-size: 15px; color: var(--ink);
+  background: transparent; border: none;
+  border-radius: 5px;
+  padding: 1px 4px; margin: -1px -4px;
+}
+
+.detail .head .spacer { flex-grow: 1; }
+
+#openBody {
+  flex-grow: 1; min-height: 0; width: 100%;
+  background: transparent; border: none; padding: 0;
+  font-family: inherit; font-size: 13.5px; line-height: 1.6; color: var(--ink);
+  resize: none;
+}
+
+.detail .state { font-size: 11.5px; color: var(--danger); }
+
+/* ---------- shared ---------- */
+
+button { cursor: pointer; }
+
+/* Ink is the only one of these that stays visible on both grounds this ring
+   has to appear on: 5.09:1 on the 苍黑 column, 16.12:1 on a white card. */
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 0; }
+
+/* Text fields mark focus with a stroke under the line instead of a box round
+   it. AA asks for a visible focus indicator (2.4.7); the size and contrast
+   rules that would force a full ring are 2.4.13, which is AAA. */
+#q:focus-visible,
+#openBody:focus-visible {
+  outline: none;
+  box-shadow: inset 0 -2px 0 var(--dark);
+}
+
+.detail .name:focus-visible { outline: none; }
+.detail .head:focus-within { border-bottom-color: var(--dark); }
+
+#notePad:focus-visible {
+  outline: none;
+  box-shadow: 0 1px 3px rgba(34, 33, 28, 0.10), 0 0 0 1px rgba(34, 33, 28, 0.04),
+              inset 0 -2px 0 var(--dark);
+}
+
+.toast {
+  position: fixed; left: 16px; right: 16px; bottom: 14px;
+  width: fit-content; max-width: calc(100% - 32px);
+  margin: 0 auto;
+  background: var(--dark); color: #ffffff;
+  border-radius: 9px;
+  padding: 8px 14px;
+  font-size: 12.5px;
 }

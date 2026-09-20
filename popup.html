@@ -1,35 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Clip'n'Note</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+<meta charset="utf-8">
+<title>Clip'n'Note</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="popup-container">
-        <header class="popup-header">
-            <h1 class="popup-title">Clip'n'Note</h1>
-        </header>
+<div class="popup">
 
-        <div class="content-container">
-            <div class="url-container">
-                <input type="text" id="productUrl1" placeholder="Enter URL 1">
-                <input type="text" id="productUrl2" placeholder="Enter URL 2">
-                <input type="text" id="productUrl3" placeholder="Enter URL 3">
-                <input type="text" id="productUrl4" placeholder="Enter URL 4">
-                <input type="text" id="productUrl5" placeholder="Enter URL 5">
-                
-                <div class="button-container">
-                    <button id="clearUrls" class="clear-button">Clear All URLs</button>
-                    <button id="copyUrls" class="copy-button">Copy All URLs</button>
-                </div>
-            </div>
+  <div class="clips">
+    <label class="vh" for="q">Search your notes</label>
+    <input id="q" type="text" placeholder="Search" autocomplete="off" spellcheck="false">
 
-            <div class="note-container">
-                <textarea id="notePad" placeholder="Add your notes here"></textarea>
-            </div>
-        </div>
-
-        <script src="script.js"></script>
+    <div class="listwrap">
+      <div class="list" id="list" role="list"></div>
     </div>
+
+    <div class="footline">
+      <span class="count" id="count"></span>
+      <button type="button" class="padhits" id="padHits" hidden></button>
+    </div>
+
+    <div class="undo" id="undo" role="status" hidden>
+      <span id="undoText"></span>
+      <button type="button" id="undoBtn">Undo</button>
+    </div>
+
+    <button type="button" id="new" class="primary">New note</button>
+  </div>
+
+  <div class="pad">
+    <label class="vh" for="notePad">Notes</label>
+    <textarea id="notePad" placeholder="Notes" spellcheck="false"></textarea>
+
+    <div class="detail" id="detail" hidden>
+      <div class="head">
+        <label class="vh" for="openName">Name</label>
+        <input id="openName" type="text" class="name" placeholder="Untitled"
+               autocomplete="off" spellcheck="false">
+      </div>
+      <label class="vh" for="openBody">Content</label>
+      <textarea id="openBody" spellcheck="false"></textarea>
+      <div class="state" id="openState" hidden>Not saved</div>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script src="script.js"></script>
 </body>
 </html>

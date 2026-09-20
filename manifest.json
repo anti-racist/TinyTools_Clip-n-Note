@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Clip'n'Note",
-  "description": "A notepad for your browser. Jot down a number, a link, a reply, and find it again when you need it.",
+  "description": "Clip'n'Note enhances your workflow with a simple, efficient way to save notes and jot down text, right from your Chrome browser.",
   "version": "2.0",
   "permissions": [
     "storage",

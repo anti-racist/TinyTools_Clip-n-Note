@@ -68,8 +68,7 @@ Every pair on screen is measured against WCAG 2.2 — 4.5:1 for text, 3:1 for a
 control's boundary or its state — and measured again under simulated
 protanopia, deuteranopia and tritanopia, because several of the originals pass
 in normal vision and fail in one of those. Nothing in the interface depends on
-colour alone to be understood. `tests/palette.py` reads the tokens out of
-`style.css` and fails if any of it drifts.
+colour alone to be understood.
 
 One pair is recorded rather than required: a white card sits 1.64:1 on
 影青. A card is not a control, so 1.4.11 asks nothing of that pair — the
@@ -88,15 +87,3 @@ column and passes.
 - 1.0 stripped `utm_` parameters and appended a `?` to everything it stored,
   including text that was not a URL. A note is now stored exactly as given.
 - The yellow header button (white on `#ffb61e`, 1.6:1) is gone.
-
-## Testing
-
-The harness lives in `tests/` and is not part of the extension. It stubs
-`chrome.storage.sync` with the real quotas, drives the popup in headless
-Chrome, and fails on any uncaught error as well as on any wrong behaviour.
-
-```
-python tests/run.py             # migration, search, editing, delete and undo
-python tests/run.py empty.html  # first run, with nothing saved
-python tests/palette.py         # contrast, including three kinds of colour blindness
-```

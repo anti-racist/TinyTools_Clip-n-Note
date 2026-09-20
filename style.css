@@ -119,7 +119,7 @@ body {
 }
 .card.selected .t { color: #ffffff; }
 .card.selected .b { color: var(--pick-sub); }
-.card.selected .dots svg { fill: var(--pick-sub); }
+.card.selected .dots { color: var(--pick-sub); }
 .card.selected .dots:hover { background: rgba(255, 255, 255, 0.16); }
 
 .card .main {
@@ -166,11 +166,14 @@ mark {
 
 .card.selected .b.copied { color: var(--ink); }
 
+/* The glyph is drawn with fill="currentColor", so this is where its colour
+   is set - one place, and one the contrast test can read. */
 .dots {
   width: 26px; height: 26px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   padding: 0;
   background: transparent; border: none; border-radius: 7px;
+  color: var(--dark);
 }
 
 .dots:hover { background: #eef1f2; }
@@ -301,8 +304,6 @@ mark {
   border-radius: 5px;
   padding: 1px 4px; margin: -1px -4px;
 }
-
-.detail .head .spacer { flex-grow: 1; }
 
 #openBody {
   flex-grow: 1; min-height: 0; width: 100%;

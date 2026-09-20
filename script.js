@@ -28,6 +28,7 @@ const MAX_NOTES = 480; /* MAX_ITEMS is 512, and the pad needs keys too. */
 
 
 const $ = (id) => document.getElementById(id);
+const enc = new TextEncoder();
 
 let notes = [];
 let query = '';
@@ -35,6 +36,8 @@ let openId = null;
 let menuId = null;
 let copiedId = null;
 let pendingUndo = null;
+/* Set when a note is made rather than picked: that one wants naming. */
+let focusName = false;
 
 /* ---------- storage helpers ---------- */
 
@@ -57,8 +60,7 @@ function toast(message) {
 
 /* How many bytes this note will occupy once chrome.storage serialises it. */
 function noteSize(id, note) {
-  const key = NOTE_PREFIX + id;
-  return new TextEncoder().encode(key + JSON.stringify(note)).length;
+  return enc.encode(NOTE_PREFIX + id + JSON.stringify(note)).length;
 }
 
 /* ---------- notes ---------- */
@@ -114,6 +116,12 @@ const savers = new Map();
 function saveNoteSoon(note, done) {
   clearTimeout(savers.get(note.id));
   savers.set(note.id, setTimeout(async () => {
+    savers.delete(note.id);
+    /* Half a second is long enough to delete the note in the meantime, and a
+     * save that landed afterwards would put it back in storage - gone from
+     * this list, but waiting in the next popup. `notes` is the live record of
+     * what still exists, and dropping from it happens before any await. */
+    if (!notes.some((n) => n.id === note.id)) return;
     const ok = await writeNote(note);
     if (done) done(ok);
   }, SAVE_DELAY));
@@ -126,8 +134,8 @@ function discardIfEmpty() {
   if (!note || !isEmpty(note)) return;
   clearTimeout(savers.get(note.id));
   savers.delete(note.id);
-  remove([NOTE_PREFIX + note.id]);
   notes = notes.filter((n) => n.id !== note.id);
+  remove([NOTE_PREFIX + note.id]);
 }
 
 function closeOpen() {
@@ -138,7 +146,6 @@ function closeOpen() {
 /* ---------- the pad ---------- */
 
 function chunkPad(text) {
-  const enc = new TextEncoder();
   const chunks = [];
   let start = 0;
   while (start < text.length) {
@@ -184,21 +191,43 @@ function readPad(all) {
 
 /* 1.0 kept five fixed slots in `savedUrls` and one string in `savedNotes`.
  * The old keys are only dropped once the new ones are written, so a failure
- * half way through loses nothing. */
+ * loses nothing.
+ *
+ * The slots go in a single write rather than one apiece: written one at a
+ * time, a failure part way through would leave some notes stored with
+ * `savedUrls` still in place, and the next run would migrate those slots a
+ * second time. One call either takes all of them or none. */
 async function migrate(all) {
   const urls = Array.isArray(all.savedUrls) ? all.savedUrls : null;
   const oldPad = typeof all.savedNotes === 'string' ? all.savedNotes : null;
   if (!urls && oldPad === null) return false;
 
   const base = Date.now();
+  const payload = {};
   let moved = 0;
   if (urls) {
     for (let i = urls.length - 1; i >= 0; i -= 1) {
-      const value = (urls[i] || '').trim();
-      if (!value) continue;
-      const note = { t: 'URL ' + (i + 1), b: value, c: base - i };
-      if (!await writeNote({ id: newId(), ...note })) return false;
+      const body = (urls[i] || '').trim();
+      if (!body) continue;
+      const value = { t: 'URL ' + (i + 1), b: body, c: base - i };
+      /* Five ids minted in the same millisecond lean on the random half
+         alone; a collision here would silently drop a slot. */
+      let id = newId();
+      while (payload[NOTE_PREFIX + id]) id = newId();
+      if (noteSize(id, value) > ITEM_BUDGET) {
+        toast('A URL saved by version 1.0 is too long to sync.');
+        return false;
+      }
+      payload[NOTE_PREFIX + id] = value;
       moved += 1;
+    }
+  }
+  if (moved) {
+    try {
+      await set(payload);
+    } catch (err) {
+      toast('Could not move your version 1.0 URLs: ' + err.message);
+      return false;
     }
   }
   if (oldPad) {
@@ -266,7 +295,9 @@ function dotsButton(note) {
   b.setAttribute('aria-expanded', String(menuId === note.id));
   /* Stacked, not in a row: a horizontal three-dot sits right beside the
      ellipsis that truncates a long title, and the two read as one smear. */
-  b.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="#1661ab"'
+  /* currentColor, not a literal: every other colour in this interface is a
+     token in style.css, which is where the contrast test reads them from. */
+  b.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"'
     + ' aria-hidden="true"><circle cx="8" cy="3" r="1.4"></circle>'
     + '<circle cx="8" cy="8" r="1.4"></circle>'
     + '<circle cx="8" cy="13" r="1.4"></circle></svg>';
@@ -330,6 +361,7 @@ function collapsedCard(note) {
 function createRow() {
   const row = document.createElement('div');
   row.className = 'card';
+  row.setAttribute('role', 'listitem');
   const main = document.createElement('button');
   main.type = 'button';
   main.className = 'main';
@@ -342,9 +374,12 @@ function createRow() {
   return row;
 }
 
+/* Inside role="list" this has to be a list item too: a plain div is dropped
+   from the accessibility tree there, taking the empty state with it. */
 function hintRow(message) {
   const row = document.createElement('div');
   row.className = 'hint';
+  row.setAttribute('role', 'listitem');
   row.textContent = message;
   return row;
 }
@@ -446,10 +481,10 @@ function showPane() {
     /* A new note needs naming, so the caret goes there. Picking an existing
        one is often just reading it, and auto-focusing the body would draw a
        focus ring around the whole sheet before anyone asked to type. */
-    if (render.focusName) {
+    if (focusName) {
       $('openName').focus();
       $('openName').select();
-      render.focusName = false;
+      focusName = false;
     }
   }
 }
@@ -489,14 +524,16 @@ async function createNote(title, body) {
   $('q').value = '';
   openId = note.id;
   menuId = null;
-  render.focusName = true;
+  focusName = true;
   render();
 }
 
 async function deleteNote(note) {
-  await remove([NOTE_PREFIX + note.id]);
+  clearTimeout(savers.get(note.id));
+  savers.delete(note.id);
   notes = notes.filter((n) => n.id !== note.id);
   if (openId === note.id) openId = null;
+  await remove([NOTE_PREFIX + note.id]);
 
   pendingUndo = note;
   $('undoText').textContent = 'Deleted “' + (note.t || 'Untitled') + '”';
@@ -550,20 +587,27 @@ async function newFromPage() {
 /* ---------- wiring ---------- */
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const all = await loadNotes();
+  /* loadNotes hands back everything it read, so the pad comes out of the same
+     pass. Migrating is the only reason to go back to storage a second time. */
+  let all = await loadNotes();
+  if (await migrate(all)) all = await loadNotes();
 
-  if (await migrate(all)) await loadNotes();
-
-  const pad = readPad(await get(null));
+  const pad = readPad(all);
   const padEl = $('notePad');
   padEl.value = pad.text;
   let padCount = pad.count;
 
+  /* Chained rather than fired off loose: two writes in flight at once would
+     both work from the same chunk count, and the shorter one's leftover
+     chunks would be left behind holding sync slots. */
+  let padWrites = Promise.resolve();
   let padTimer;
   padEl.addEventListener('input', () => {
     clearTimeout(padTimer);
-    padTimer = setTimeout(async () => {
-      padCount = await writePad(padEl.value, padCount);
+    padTimer = setTimeout(() => {
+      padWrites = padWrites.then(async () => {
+        padCount = await writePad(padEl.value, padCount);
+      });
     }, SAVE_DELAY);
   });
 
@@ -641,5 +685,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   render();
-  if (!q.hidden) q.focus();
+  q.focus();
 });

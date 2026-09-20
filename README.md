@@ -51,7 +51,7 @@ Data from version 1.0 (`savedUrls`, `savedNotes`) is migrated the first time
 | `popup.html` | The popup's markup. |
 | `style.css` | All of the styling, including the colour tokens. |
 | `script.js` | Storage, search, editing, the menu, migration. |
-| `icons/` | Toolbar icons (not tracked in git). |
+| `icons/` | The three toolbar sizes the manifest asks for, and the 300px logo they are cut from. |
 
 ## Colour
 

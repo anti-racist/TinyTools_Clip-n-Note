@@ -1,12 +1,8 @@
-# Ignore all .png files
+# Screenshots and scratch images stay out, but the extension's own icons are
+# part of the source: manifest.json will not load without them.
 *.png
+!icons/*.png
 
-# Ignore all .txt files
-*.txt
-
-# Ignore the 'icons' directory
-icons/
-
-# The test harness lives here but is not part of the extension
+# The test harness lives here. It drives the popup in headless Chrome and is
+# not part of what ships, so it is not tracked.
 tests/
-dump.html

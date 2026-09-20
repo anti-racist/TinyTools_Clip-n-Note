@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Clip'n'Note",
-  "description": "A notepad that stays open, and a searchable list of the snippets you paste over and over.",
+  "description": "A notepad for your browser. Jot down a number, a link, a reply, and find it again when you need it.",
   "version": "2.0",
   "permissions": [
     "storage",

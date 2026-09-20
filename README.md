@@ -1,8 +1,8 @@
 # Clip'n'Note
 
-A Chrome extension with two halves in one popup: a notepad that is already
-open when you click the icon, and a searchable list of the snippets you paste
-over and over — a login page, a dial-in number, a standing reply, a template.
+Clip'n'Note enhances your workflow by providing a simple and efficient way to
+save notes and jot down text, seamlessly integrating into your daily tasks
+right from your Chrome browser.
 
 ## What it does
 

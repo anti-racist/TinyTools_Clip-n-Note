@@ -8,9 +8,12 @@ over and over — a login page, a dial-in number, a standing reply, a template.
 
 - **Notes list (left).** Each note is a name and a piece of content. Click one
   to open it; the name and the content are editable in place and save
-  themselves as you type. Typing in the search box filters the list, and
-  Enter copies the first match to the clipboard.
-- **Pad (right).** A plain notepad, always visible, saved as you type.
+  themselves as you type. Typing in the search box marks the matches where
+  they sit rather than hiding anything, and Enter copies the first match to
+  the clipboard.
+- **Pad (right).** A plain notepad, saved as you type. It shares the right-hand
+  side of the popup with whichever note is open, and comes back when you close
+  that note.
 - **New note.** Creates a note from the page you are on, with its title and URL
   already filled in, and puts the cursor on the name. If you search for
   something that is not there, the list offers to create it instead.
@@ -55,12 +58,15 @@ Data from version 1.0 (`savedUrls`, `savedNotes`) is migrated the first time
 
 ## What is new in 2.0
 
-- Five fixed URL slots became an unlimited, searchable list of named notes.
-- The pad and the list are both visible at once, as they were in 1.0.
+- Five fixed URL slots became a searchable list of named notes - as many as
+  sync has room for, which is 480.
+- The pad and the list share one popup, as they did in 1.0.
 - Notes are editable in place instead of being retyped.
 - Deleting is undoable.
-- 1.0 saved on every keystroke and rewrote all five slots each time; writes are
-  now debounced and touch one key.
-- 1.0 stripped `utm_` parameters and appended a `?` to everything it stored,
-  including text that was not a URL. A note is now stored exactly as given.
-- The yellow header button (white on `#ffb61e`, 1.6:1) is gone.
+- 1.0 rewrote all five URL slots on every keystroke. A note's writes now wait
+  for a pause and touch one key. (1.0 already debounced the pad, at the same
+  500 ms.)
+- 1.0 stripped `utm_` parameters and appended a `?` to every URL it could
+  parse; anything it could not parse as a URL it stored unchanged. A note is
+  now stored exactly as given, whatever it is.
+- The yellow Clear All URLs button (white on `#FFD700`, 1.40:1) is gone.

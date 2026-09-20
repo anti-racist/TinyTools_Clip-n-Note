@@ -53,29 +53,6 @@ Data from version 1.0 (`savedUrls`, `savedNotes`) is migrated the first time
 | `script.js` | Storage, search, editing, the menu, migration. |
 | `icons/` | The three toolbar sizes the manifest asks for, and the 300px logo they are cut from. |
 
-## Colour
-
-| | | |
-| --- | --- | --- |
-| 鱼肚白 `#f7f4ed` | the page | |
-| 影青 `#bdcbd2` | the notes column | a card's own edge makes it a card here |
-| 靛青 `#1661ab` | New note, the focus stroke, the menu glyph | |
-| 靛青 → 青黛 `#1a3a5f` | the open note's wash | starts on the button's own colour |
-| 杏仁黄 `#f7e8aa` | search marks, Copied, Undo | everything transient, and nothing else |
-| 赤 `#981e22` | Delete note | darkened; the original is 3.40:1 under tritanopia |
-
-Every pair on screen is measured against WCAG 2.2 — 4.5:1 for text, 3:1 for a
-control's boundary or its state — and measured again under simulated
-protanopia, deuteranopia and tritanopia, because several of the originals pass
-in normal vision and fail in one of those. Nothing in the interface depends on
-colour alone to be understood.
-
-One pair is recorded rather than required: a white card sits 1.64:1 on
-影青. A card is not a control, so 1.4.11 asks nothing of that pair — the
-card is separated by its own 14% ink ring instead. Everything 1.4.11 does
-ask about, the focus ring and the picked row, is measured against the
-column and passes.
-
 ## What is new in 2.0
 
 - Five fixed URL slots became an unlimited, searchable list of named notes.

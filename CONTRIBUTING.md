@@ -63,10 +63,9 @@ needs 3:1, under all three simulations rather than normal vision alone.
 | `style.css` | All of the styling, including the colour tokens. |
 | `script.js` | Storage, search, editing, the menu, migration. |
 | `icons/` | The three toolbar sizes the manifest asks for, and the 300px logo they are cut from. |
-| `publishing/` | Store listing copy. Not part of the extension package. |
 
 ## Releasing
 
-Bump `version` in `manifest.json`, and check
-[`publishing/store-listing.md`](publishing/store-listing.md) still describes
-what the code does. Listing copy and behaviour change in the same commit.
+Bump `version` in `manifest.json`, and check that README still describes
+what the code does before pasting it into the Developer Dashboard. Copy
+and behaviour change in the same commit.

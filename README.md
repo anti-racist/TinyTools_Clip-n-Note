@@ -1,6 +1,6 @@
 # Clip'n'Note
 
-A notepad built into your browser: your notes on the left, a scratch pad on the right.
+Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find it without leaving your tab.
 
 ## What's New in 2.0.1
 

@@ -100,7 +100,7 @@ async function writeNote(note) {
   }
   const value = { t: note.t, b: note.b, c: note.c };
   if (noteSize(note.id, value) > ITEM_BUDGET) {
-    toast('This note is too long to sync. Shorten it, or keep it in the pad.');
+    toast('This note is too long to sync. Shorten it, or keep it in the scratch pad.');
     return false;
   }
   try {
@@ -171,7 +171,7 @@ async function writePad(text, previousCount) {
   try {
     await set(payload);
   } catch (err) {
-    toast('Could not save the pad: ' + err.message);
+    toast('Could not save the scratch pad: ' + err.message);
     return previousCount;
   }
   const stale = [];
@@ -388,6 +388,22 @@ function placeMenu(note, anchor) {
   const menu = document.createElement('div');
   menu.className = 'menu';
 
+  /* Renaming was always possible by typing in the open note's title, but
+     this is where people look for it first. */
+  const rename = document.createElement('button');
+  rename.type = 'button';
+  rename.textContent = 'Rename';
+  rename.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menuId = null;
+    if (openId !== note.id) {
+      discardIfEmpty();
+      openId = note.id;
+    }
+    focusName = true;
+    render();
+  });
+
   const copy = document.createElement('button');
   copy.type = 'button';
   copy.textContent = 'Copy to clipboard';
@@ -408,7 +424,7 @@ function placeMenu(note, anchor) {
     deleteNote(note);
   });
 
-  menu.append(copy, del);
+  menu.append(rename, copy, del);
   menu.addEventListener('click', (e) => e.stopPropagation());
 
   const column = document.querySelector('.clips');
@@ -446,7 +462,7 @@ function render() {
      browser's own selection can show it instead, which also scrolls to it. */
   $('padHits').hidden = !query || !inPad;
   $('padHits').textContent = inPad === 1
-    ? '1 in your notes' : inPad + ' in your notes';
+    ? '1 in your scratch pad' : inPad + ' in your scratch pad';
 
   if (menuId) {
     const note = notes.find((n) => n.id === menuId);
@@ -478,14 +494,16 @@ function showPane() {
     $('openBody').value = note.b;
     $('openState').hidden = true;
     paneFor = note.id;
-    /* A new note needs naming, so the caret goes there. Picking an existing
-       one is often just reading it, and auto-focusing the body would draw a
-       focus ring around the whole sheet before anyone asked to type. */
-    if (focusName) {
-      $('openName').focus();
-      $('openName').select();
-      focusName = false;
-    }
+  }
+  /* A new note needs naming, so the caret goes there. Picking an existing one
+     is often just reading it, and auto-focusing the body would draw a focus
+     ring around the whole sheet before anyone asked to type. Renaming asks
+     for the caret on a note that may already be open, which is why this sits
+     outside the reload above rather than inside it. */
+  if (focusName) {
+    $('openName').focus();
+    $('openName').select();
+    focusName = false;
   }
 }
 

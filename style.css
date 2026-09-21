@@ -292,18 +292,24 @@ mark {
   border-bottom: 1px solid var(--hairline);
 }
 
-/* Sized to its own text, so the focus ring boxes the title rather than the
-   whole header. The ring itself has to stay: it is the only thing telling a
-   keyboard user where they are. */
+/* Full width of the header, not sized to its own text. Sizing it to the text
+   made the click target as narrow as the title was, so renaming a note called
+   "abc" meant aiming at three characters; the rest of the line looked like
+   part of the field but was dead header. Nothing is lost by widening it: the
+   comment this replaces kept the width for the sake of a focus ring that the
+   rule below has always turned off. */
 .detail .name {
-  flex: 0 1 auto;
-  width: auto; min-width: 8ch; max-width: 100%;
-  field-sizing: content;
+  flex: 1 1 auto;
+  width: 100%; min-width: 0; max-width: 100%;
   font-family: inherit; font-size: 15px; color: var(--ink);
   background: transparent; border: none;
   border-radius: 5px;
   padding: 1px 4px; margin: -1px -4px;
 }
+
+/* Nothing else says the title is editable - it has no border, no fill and its
+   label is visually hidden - so the hover is what answers that. */
+.detail .name:hover { background: #eef1f2; }
 
 #openBody {
   flex-grow: 1; min-height: 0; width: 100%;

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Clip'n'Note",
-  "description": "Enhance your workflow with a simple, efficient way to save notes and jot down text. Compatible with most Chromium-based browsers.",
-  "version": "2.0",
+  "description": "Never lose an idea. Clip'n'Note is a notepad built into your browser.",
+  "version": "2.0.1",
   "permissions": [
     "storage",
     "clipboardWrite",

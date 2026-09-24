@@ -127,6 +127,20 @@ function saveNoteSoon(note, done) {
   }, SAVE_DELAY));
 }
 
+/* Writes every note save still waiting on its timer, now. The popup is torn
+ * down the moment it closes, timers and all, so without this whatever was
+ * typed in the last half second before closing was never saved - and a note
+ * made and filled in quickly vanished whole. Only notes still in `notes` are
+ * written, as in saveNoteSoon, so nothing deleted comes back. */
+function flushNotes() {
+  for (const [id, timer] of savers) {
+    clearTimeout(timer);
+    const note = notes.find((n) => n.id === id);
+    if (note) writeNote(note);
+  }
+  savers.clear();
+}
+
 /* Closing an empty note throws it away rather than leaving a blank row. */
 function discardIfEmpty() {
   if (openId === null) return;
@@ -164,6 +178,8 @@ function chunkPad(text) {
   return chunks.length ? chunks : [''];
 }
 
+/* Resolves to the chunk count now in storage, and whether this write got
+ * there. A failure leaves the previous count in place. */
 async function writePad(text, previousCount) {
   const chunks = chunkPad(text);
   const payload = { [PAD_COUNT]: chunks.length };
@@ -172,12 +188,12 @@ async function writePad(text, previousCount) {
     await set(payload);
   } catch (err) {
     toast('Could not save the scratch pad: ' + err.message);
-    return previousCount;
+    return { count: previousCount, ok: false };
   }
   const stale = [];
   for (let i = chunks.length; i < previousCount; i += 1) stale.push(PAD_PREFIX + i);
   if (stale.length) await remove(stale);
-  return chunks.length;
+  return { count: chunks.length, ok: true };
 }
 
 function readPad(all) {
@@ -230,13 +246,21 @@ async function migrate(all) {
       return false;
     }
   }
+  /* The URLs are in by now, so `savedUrls` goes whatever happens next;
+   * keeping it would migrate them a second time. `savedNotes` goes only once
+   * the pad holding it is written. It used to be removed regardless, so a
+   * failed pad write deleted the 1.0 pad for good. Left in place, the next
+   * popup tries again - and since the failed write changed nothing, the
+   * merge will not repeat it. */
+  let padMoved = true;
   if (oldPad) {
     const existing = readPad(all);
     const merged = existing.text ? existing.text + '\n' + oldPad : oldPad;
-    await writePad(merged, existing.count);
+    padMoved = (await writePad(merged, existing.count)).ok;
   }
-  await remove(['savedUrls', 'savedNotes']);
-  if (moved) toast('Moved ' + moved + ' saved URLs from version 1.0.');
+  await remove(padMoved ? ['savedUrls', 'savedNotes'] : ['savedUrls']);
+  /* On a failure writePad's own message is the one to leave up. */
+  if (moved && padMoved) toast('Moved ' + moved + ' saved URLs from version 1.0.');
   return true;
 }
 
@@ -592,7 +616,9 @@ async function newFromPage() {
   /* On a browser page there is nothing worth keeping: the URL is useless to
    * paste and the title names the browser, not anything of yours. Better an
    * empty note waiting for a name than three called "Extensions". */
-  if (/^(chrome|edge|about|chrome-extension|devtools|view-source):/i.test(url)) {
+  /* vivaldi:, brave: and opera: are the same thing in the other Chromium
+   * browsers README says this works in. */
+  if (/^(chrome|edge|about|chrome-extension|devtools|view-source|vivaldi|brave|opera):/i.test(url)) {
     title = '';
     url = '';
   }
@@ -623,11 +649,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   padEl.addEventListener('input', () => {
     clearTimeout(padTimer);
     padTimer = setTimeout(() => {
+      padTimer = null;
       padWrites = padWrites.then(async () => {
-        padCount = await writePad(padEl.value, padCount);
+        padCount = (await writePad(padEl.value, padCount)).count;
       });
     }, SAVE_DELAY);
   });
+
+  /* The popup closing - clicking away, Escape, switching tab - is when the
+   * pending saves have to go out; see flushNotes(). The pad's write is issued
+   * straight away rather than queued behind padWrites: a queued one would
+   * wait on a storage callback that never arrives once the page is gone.
+   * storage applies calls in order, so it still lands after any write
+   * already in flight. */
+  const flush = () => {
+    flushNotes();
+    if (padTimer) {
+      clearTimeout(padTimer);
+      padTimer = null;
+      writePad(padEl.value, padCount);
+    }
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flush();
+  });
+  window.addEventListener('pagehide', flush);
 
   const q = $('q');
   q.addEventListener('input', () => {
@@ -639,6 +685,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   q.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
+    /* The Enter that picks a candidate in a Chinese or Japanese input method
+       is the IME's, not ours: acting on it copied or created a note while
+       the search was still being typed. 229 covers browsers that do not set
+       isComposing on that key. */
+    if (e.isComposing || e.keyCode === 229) return;
     e.preventDefault();
     const found = matching();
     if (found.length) copyNote(found[0]);
@@ -692,6 +743,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
+    /* Escape during composition cancels the candidate, not the note. */
+    if (e.isComposing || e.keyCode === 229) return;
     if (menuId === null && openId === null) return;
     /* Chrome closes the popup on Escape; this only wins when the event is
      * ours to cancel, which is why clicking away has to work too. */

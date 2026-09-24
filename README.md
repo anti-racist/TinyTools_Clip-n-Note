@@ -28,7 +28,7 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 
 ## Privacy
 
-Clip'n'Note collects no data. Your notes are stored by your browser and synced through your browser account.
+We do not collect any user data. Nothing you type is ever sent to us. Your notes are stored by your browser and synced through your browser account.
 
 Full details: [privacy policy](PRIVACY.md).
 

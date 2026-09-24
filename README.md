@@ -10,6 +10,7 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 - **Vivaldi, Brave and Opera:** New note on a browser page starts empty, as it already did in Chrome and Edge.
 - **Clearer message when sync storage is full**, saying what to do about it.
 - **Search highlights line up** after letters such as İ.
+- **New icon colour:** a deeper green that matches the other TinyTools extensions.
 
 ## Key Features
 

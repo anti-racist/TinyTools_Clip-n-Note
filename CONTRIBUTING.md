@@ -69,3 +69,7 @@ needs 3:1, under all three simulations rather than normal vision alone.
 Bump `version` in `manifest.json`, and check that README still describes
 what the code does before pasting it into the Developer Dashboard. Copy
 and behaviour change in the same commit.
+
+README keeps one What's New section, for the version being released.
+Replace the previous one rather than adding above it; the store listing's
+Version section is pasted from it, and a listing is not a changelog.

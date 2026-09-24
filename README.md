@@ -11,12 +11,6 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 - **Clearer message when sync storage is full**, saying what to do about it.
 - **Search highlights line up** after letters such as İ.
 
-## What's New in 2.0.1
-
-- **Rename** a note from its ⋮ menu.
-- **Wider title field:** in an open note, the title now spans the full width, so it's easier to click and rename.
-- **Clearer layout:** the right side shows your scratch pad, or the note you've opened.
-
 ## Key Features
 
 - Holds quick text in a scratch pad, saved as you type

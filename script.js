@@ -50,6 +50,15 @@ const set = (obj) => new Promise((res, rej) => {
 });
 const remove = (keys) => new Promise((res) => chrome.storage.sync.remove(keys, res));
 
+/* Browser sync holds about 100 KB for the whole extension, notes and pad
+ * together, and fills long before MAX_NOTES is reached. Its own message for
+ * that is "QUOTA_BYTES quota exceeded", which tells nobody what to do. */
+function saveError(err) {
+  return /QUOTA_BYTES(?!_PER_ITEM)/.test(err.message)
+    ? 'Sync storage is full. Delete a note or shorten the scratch pad to make room.'
+    : err.message;
+}
+
 function toast(message) {
   const el = $('toast');
   el.textContent = message;
@@ -107,7 +116,7 @@ async function writeNote(note) {
     await set({ [NOTE_PREFIX + note.id]: value });
     return true;
   } catch (err) {
-    toast('Could not save: ' + err.message);
+    toast('Could not save: ' + saveError(err));
     return false;
   }
 }
@@ -187,7 +196,7 @@ async function writePad(text, previousCount) {
   try {
     await set(payload);
   } catch (err) {
-    toast('Could not save the scratch pad: ' + err.message);
+    toast('Could not save the scratch pad: ' + saveError(err));
     return { count: previousCount, ok: false };
   }
   const stale = [];
@@ -274,14 +283,32 @@ function matches(note, q) {
 }
 
 /* Searching does not thin the list out: every clip stays where it was and
- * the ones that match say so. */
+ * the ones that match say so.
+ *
+ * Each hit is a [start, end) range in `text` itself. Matching happens in the
+ * lowercased text, and a few letters change length when lowercased (İ becomes
+ * two code units), so a position found there is not a position in `text`.
+ * Using it directly put the highlight, and the pad's selection, one
+ * character off after such a letter. `from` and `to` map each lowercased
+ * code unit back to the character it came from. */
 function hits(text, q) {
   const out = [];
   if (!q) return out;
-  const hay = text.toLowerCase();
   const needle = q.toLowerCase();
+  let hay = '';
+  const from = [];
+  const to = [];
+  for (const ch of text) {
+    const start = from.length ? to[to.length - 1] : 0;
+    const low = ch.toLowerCase();
+    for (let k = 0; k < low.length; k += 1) {
+      from.push(start);
+      to.push(start + ch.length);
+    }
+    hay += low;
+  }
   for (let i = hay.indexOf(needle); i !== -1; i = hay.indexOf(needle, i + needle.length)) {
-    out.push(i);
+    out.push([from[i], to[i + needle.length - 1]]);
   }
   return out;
 }
@@ -292,12 +319,13 @@ function marked(text, q) {
   const frag = document.createDocumentFragment();
   const found = hits(text, q);
   let at = 0;
-  for (const i of found) {
-    if (i > at) frag.append(text.slice(at, i));
+  for (const [start, end] of found) {
+    if (start < at) continue;
+    if (start > at) frag.append(text.slice(at, start));
     const m = document.createElement('mark');
-    m.textContent = text.slice(i, i + q.length);
+    m.textContent = text.slice(start, end);
     frag.append(m);
-    at = i + q.length;
+    at = end;
   }
   frag.append(text.slice(at));
   return frag;
@@ -703,12 +731,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const found = hits(padEl.value, query);
     if (!found.length) return;
     padAt %= found.length;
-    const i = found[padAt];
+    const [start, end] = found[padAt];
     padAt += 1;
     closeOpen();
     render();
     padEl.focus();
-    padEl.setSelectionRange(i, i + query.length);
+    padEl.setSelectionRange(start, end);
   });
 
   $('new').addEventListener('click', newFromPage);

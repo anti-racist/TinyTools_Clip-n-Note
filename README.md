@@ -2,6 +2,13 @@
 
 Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find it without leaving your tab.
 
+## What's New in 2.0.2
+
+- **Nothing you type is lost when the popup closes.** Text typed just before clicking away or pressing Esc is now saved, in the scratch pad and in notes.
+- **Chinese and Japanese input:** pressing Enter to pick a word in the search box no longer copies or creates a note.
+- **Safer upgrade from 1.0:** if your old scratch pad can't be moved, it's kept and tried again next time, instead of being lost.
+- **Vivaldi, Brave and Opera:** New note on a browser page starts empty, as it already did in Chrome and Edge.
+
 ## What's New in 2.0.1
 
 - **Rename** a note from its ⋮ menu.

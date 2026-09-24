@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Clip'n'Note",
   "description": "Never lose an idea. Clip'n'Note is a notepad built into your browser.",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "permissions": [
     "storage",
     "clipboardWrite",

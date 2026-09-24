@@ -8,6 +8,8 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 - **Chinese and Japanese input:** pressing Enter to pick a word in the search box no longer copies or creates a note.
 - **Safer upgrade from 1.0:** if your old scratch pad can't be moved, it's kept and tried again next time, instead of being lost.
 - **Vivaldi, Brave and Opera:** New note on a browser page starts empty, as it already did in Chrome and Edge.
+- **Clearer message when sync storage is full**, saying what to do about it.
+- **Search highlights line up** after letters such as İ.
 
 ## What's New in 2.0.1
 
@@ -33,6 +35,8 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 
 Clip'n'Note collects no data. Your notes are stored by your browser and synced through your browser account.
 
+Full details: [privacy policy](PRIVACY.md).
+
 ## Compatibility
 
-Works in Chrome and other Chromium-based browsers.
+Compatible with most Chromium-based browsers, including Google Chrome, Microsoft Edge and Vivaldi.

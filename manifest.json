@@ -1,13 +1,16 @@
 {
   "manifest_version": 3,
   "name": "Clip'n'Note",
-  "description": "Never lose an idea. Clip'n'Note is a notepad built into your browser.",
+  "description": "A notepad in your browser: keep notes and a scratch pad, find them by keyword, and copy them in one click.",
   "version": "2.0.2",
   "permissions": [
     "storage",
     "clipboardWrite",
     "activeTab"
   ],
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

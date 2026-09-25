@@ -4,31 +4,24 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 
 ## What's New in 2.0.2
 
-- **Nothing you type is lost when the popup closes.** Text typed just before clicking away or pressing Esc is now saved, in the scratch pad and in notes.
-- **Chinese and Japanese input:** pressing Enter to pick a word in the search box no longer copies or creates a note.
-- **Safer upgrade from 1.0:** if your old scratch pad can't be moved, it's kept and tried again next time, instead of being lost.
-- **Vivaldi, Brave and Opera:** New note on a browser page starts empty, as it already did in Chrome and Edge.
-- **Clearer message when sync storage is full**, saying what to do about it.
-- **Search highlights line up** after letters such as İ.
-- **New icon colour:** a deeper green that matches the other TinyTools extensions.
+- 🐛 Text is now saved even when the popup is closed immediately after typing, in both the scratch pad and notes.
+- 🐛 With Chinese or Japanese input, pressing Enter to select a word in the search box no longer copies a note or creates a new one.
 
 ## Key Features
 
-- Holds quick text in a scratch pad, saved as you type
-- Saves your notes, finds them by keyword, and copies them to your clipboard
-- Syncs automatically across your signed-in browsers, without a separate account
+- A scratch pad for quick text, saved automatically while typing
+- Notes that can be searched by keyword and copied to the clipboard in one click
+- Automatic sync across signed-in browsers, with no separate account
 
 ## How to Use
 
-1. Click the Clip'n'Note icon in your toolbar.
-2. Click **New note**. It starts with the current page's title and link, which you can edit or replace.
-3. Click a note to open it. Click it again, or anywhere outside it, to return to the scratch pad.
-4. Use a note's ⋮ menu to rename, copy, or delete it.
-5. Type in the search box and press **Enter** to copy the newest matching note.
+1. Click the Clip'n'Note icon in the toolbar.
+2. Click **New note**. The note starts with the current page's title and link, which can be edited or replaced.
+3. Type in the search box and press **Enter** to copy the newest matching note.
 
 ## Privacy
 
-We do not collect any user data. Nothing you type is ever sent to us. Your notes are stored by your browser and synced through your browser account.
+The extension sends nothing anywhere and has no server. Notes are stored by the browser and synced through the browser account.
 
 Full details: [privacy policy](PRIVACY.md).
 

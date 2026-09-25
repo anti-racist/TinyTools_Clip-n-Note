@@ -4,8 +4,8 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 
 ## What's New in 2.0.2
 
-- **Nothing you type is lost when the popup closes,** even text typed just before clicking away or pressing Esc.
-- **Chinese and Japanese input:** pressing Enter to pick a word in the search box no longer copies or creates a note.
+- Everything you type is saved, even if you close the popup right after typing.
+- When you type Chinese or Japanese in the search box, pressing Enter to choose a word no longer copies a note or creates a new one.
 
 ## Key Features
 

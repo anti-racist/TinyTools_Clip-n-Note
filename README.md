@@ -4,24 +4,24 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 
 ## What's New in 2.0.2
 
-- 🐛 Everything you type is saved, even if you close the popup right after typing.
-- 🐛 When you type Chinese or Japanese in the search box, pressing Enter to choose a word no longer copies a note or creates a new one.
+- 🐛 Text is now saved even when the popup is closed immediately after typing, in both the scratch pad and notes.
+- 🐛 With Chinese or Japanese input, pressing Enter to select a word in the search box no longer copies a note or creates a new one.
 
 ## Key Features
 
-- Holds quick text in a scratch pad, saved as you type
-- Saves your notes, finds them by keyword, and copies them to your clipboard
-- Syncs automatically across your signed-in browsers, without a separate account
+- A scratch pad for quick text, saved automatically while typing
+- Notes that can be searched by keyword and copied to the clipboard in one click
+- Automatic sync across signed-in browsers, with no separate account
 
 ## How to Use
 
-1. Click the Clip'n'Note icon in your toolbar.
-2. Click **New note**. It starts with the current page's title and link, which you can edit or replace.
+1. Click the Clip'n'Note icon in the toolbar.
+2. Click **New note**. The note starts with the current page's title and link, which can be edited or replaced.
 3. Type in the search box and press **Enter** to copy the newest matching note.
 
 ## Privacy
 
-The extension sends nothing anywhere and has no server. Your notes are stored by your browser and synced through your browser account.
+The extension sends nothing anywhere and has no server. Notes are stored by the browser and synced through the browser account.
 
 Full details: [privacy policy](PRIVACY.md).
 

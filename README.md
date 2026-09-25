@@ -4,13 +4,8 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 
 ## What's New in 2.0.2
 
-- **Nothing you type is lost when the popup closes.** Text typed just before clicking away or pressing Esc is now saved, in the scratch pad and in notes.
+- **Nothing you type is lost when the popup closes,** even text typed just before clicking away or pressing Esc.
 - **Chinese and Japanese input:** pressing Enter to pick a word in the search box no longer copies or creates a note.
-- **Safer upgrade from 1.0:** if your old scratch pad can't be moved, it's kept and tried again next time, instead of being lost.
-- **Vivaldi, Brave and Opera:** New note on a browser page starts empty, as it already did in Chrome and Edge.
-- **Clearer message when sync storage is full**, saying what to do about it.
-- **Search highlights line up** after letters such as İ.
-- **New icon colour:** a deeper green that matches the other TinyTools extensions.
 
 ## Key Features
 
@@ -22,9 +17,7 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 
 1. Click the Clip'n'Note icon in your toolbar.
 2. Click **New note**. It starts with the current page's title and link, which you can edit or replace.
-3. Click a note to open it. Click it again, or anywhere outside it, to return to the scratch pad.
-4. Use a note's ⋮ menu to rename, copy, or delete it.
-5. Type in the search box and press **Enter** to copy the newest matching note.
+3. Type in the search box and press **Enter** to copy the newest matching note.
 
 ## Privacy
 

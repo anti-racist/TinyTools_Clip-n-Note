@@ -6,7 +6,7 @@ Clip'n'Note is a browser extension published by Maggie Mao.
 
 ## In short
 
-- Nothing leaves your browser. The extension has no server, no account,
+- The extension sends nothing anywhere. It has no server, no account,
   no analytics and no network code.
 - Your notes and scratch pad are kept by your browser, and synced by your
   browser account if you use browser sync.

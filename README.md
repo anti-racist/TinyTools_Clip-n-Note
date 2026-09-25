@@ -21,7 +21,7 @@ Clip'n'Note is a notepad in your browser. Keep what you'll need again, and find 
 
 ## Privacy
 
-Nothing leaves your browser, and the extension has no server. Your notes are stored by your browser and synced through your browser account.
+The extension sends nothing anywhere and has no server. Your notes are stored by your browser and synced through your browser account.
 
 Full details: [privacy policy](PRIVACY.md).
 

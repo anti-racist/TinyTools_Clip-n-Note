@@ -1,8 +1,5 @@
 # Working on Clip'n'Note
 
-What the extension is and does is in [`README.md`](README.md). This file is
-about the source.
-
 ## Running it from source
 
 There is nothing to build and there are no dependencies. Open
@@ -53,16 +50,6 @@ Every colour is a token at the top of `style.css`, measured against WCAG 2.2
 and against simulated protanopia, deuteranopia and tritanopia. Before
 changing one, re-measure: text needs 4.5:1 and a control's own boundary
 needs 3:1, under all three simulations rather than normal vision alone.
-
-## Source layout
-
-| File | What it is |
-| --- | --- |
-| `manifest.json` | MV3 manifest. |
-| `popup.html` | The popup's markup. |
-| `style.css` | All of the styling, including the colour tokens. |
-| `script.js` | Storage, search, editing, the menu, migration. |
-| `icons/` | The three toolbar sizes the manifest asks for, and the 300px logo they are cut from. |
 
 ## Releasing
 

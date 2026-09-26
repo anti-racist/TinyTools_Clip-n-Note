@@ -1,6 +1,6 @@
 # Clip'n'Note
 
-A browser notepad that lets users write and save text notes, then find them again without leaving the current tab. Notes are stored in the browser's extension storage.
+A browser notepad that lets users write and save text notes, then find them again without leaving the current tab. 
 
 ## What's New in 2.0.2
 

@@ -1,6 +1,6 @@
 # Privacy policy: Clip'n'Note
 
-Last updated: 25 September 2026
+Last updated: 13 October 2026
 
 Clip'n'Note is a browser extension published by Maggie Mao.
 
@@ -17,7 +17,6 @@ Clip'n'Note is a browser extension published by Maggie Mao.
 | Data | When | Where it goes | How long it is kept |
 | --- | --- | --- | --- |
 | Your notes and your scratch pad | As you type | Your browser's extension storage, synced by your browser account if you use browser sync | Until you delete them or remove the extension |
-| The title and address of the page you are on | Only when you click **New note** | Saved in that note, where you can edit or delete them | As for the note |
 | The note you copy | When you copy a note | Your clipboard | Until something else is copied |
 
 ## Permissions
@@ -25,7 +24,6 @@ Clip'n'Note is a browser extension published by Maggie Mao.
 | Permission | Why |
 | --- | --- |
 | `storage` | To keep your notes and scratch pad |
-| `activeTab` | To start a new note with the current page's title and address, when you click **New note** |
 | `clipboardWrite` | To copy a note when you ask |
 
 ## Syncing

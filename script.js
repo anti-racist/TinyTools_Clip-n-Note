@@ -536,6 +536,7 @@ function showPane() {
 
   $('notePad').hidden = !!note;
   $('detail').hidden = !note;
+  $('savePad').hidden = !!note || !$('notePad').value.trim();
 
   if (!note) {
     paneFor = null;
@@ -580,15 +581,16 @@ async function copyNote(note) {
   }, 1400);
 }
 
+/* Resolves to the note, or null when it could not be made. */
 async function createNote(title, body) {
   if (notes.length >= MAX_NOTES) {
     toast('Sync holds ' + MAX_NOTES + ' notes. Delete one to make room.');
-    return;
+    return null;
   }
   discardIfEmpty();
   const note = { id: newId(), t: title, b: body, c: Date.now() };
   /* Nothing is written until there is something to write. */
-  if (!isEmpty(note) && !await writeNote(note)) return;
+  if (!isEmpty(note) && !await writeNote(note)) return null;
   notes.unshift(note);
   query = '';
   $('q').value = '';
@@ -596,6 +598,18 @@ async function createNote(title, body) {
   menuId = null;
   focusName = true;
   render();
+  return note;
+}
+
+/* One undo strip serves every action that can be taken back. */
+function offerUndo(label, undo) {
+  pendingUndo = undo;
+  $('undoText').textContent = label;
+  clearTimeout(offerUndo.timer);
+  offerUndo.timer = setTimeout(() => {
+    pendingUndo = null;
+    render();
+  }, UNDO_DELAY);
 }
 
 async function deleteNote(note) {
@@ -605,55 +619,33 @@ async function deleteNote(note) {
   if (openId === note.id) openId = null;
   await remove([NOTE_PREFIX + note.id]);
 
-  pendingUndo = note;
-  $('undoText').textContent = 'Deleted “' + (note.t || 'Untitled') + '”';
-  clearTimeout(deleteNote.timer);
-  deleteNote.timer = setTimeout(() => {
-    pendingUndo = null;
-    render();
-  }, UNDO_DELAY);
+  offerUndo('Deleted “' + (note.t || 'Untitled') + '”', () => restoreNote(note));
   render();
 }
 
-async function undoDelete() {
-  if (!pendingUndo) return;
-  const note = pendingUndo;
-  pendingUndo = null;
-  clearTimeout(deleteNote.timer);
-  if (!await writeNote(note)) {
-    render();
-    return;
-  }
+async function restoreNote(note) {
+  if (!await writeNote(note)) return;
   notes.push(note);
   notes.sort((a, b) => b.c - a.c);
+}
+
+async function undoLast() {
+  if (!pendingUndo) return;
+  const undo = pendingUndo;
+  pendingUndo = null;
+  clearTimeout(offerUndo.timer);
+  await undo();
   render();
 }
 
-async function newFromPage() {
-  let title = '';
-  let url = '';
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab) {
-      title = tab.title || '';
-      url = tab.url || '';
-    }
-  } catch (err) {
-    /* No access to the tab: still make an empty note rather than nothing. */
-  }
-  /* On a browser page there is nothing worth keeping: the URL is useless to
-   * paste and the title names the browser, not anything of yours. Better an
-   * empty note waiting for a name than three called "Extensions". */
-  /* vivaldi:, brave: and opera: are the same thing in the other Chromium
-   * browsers README says this works in. */
-  if (/^(chrome|edge|about|chrome-extension|devtools|view-source|vivaldi|brave|opera):/i.test(url)) {
-    title = '';
-    url = '';
-  }
-  /* Otherwise the page is stored verbatim. Trimming tracking parameters is
-   * GetCleanURL's job; a note that silently differs from what you saved is
-   * worse than a long one. */
-  await createNote(title, url);
+/* The scratch pad's first line names the note and the rest is its content.
+ * Leading blank lines are skipped, so a pad that starts with a gap still
+ * gets a name. */
+function splitPad(text) {
+  const lines = text.replace(/^\s*\n/, '').split('\n');
+  const title = lines[0].trim();
+  const body = lines.slice(1).join('\n').replace(/^\s*\n/, '').trimEnd();
+  return { title, body };
 }
 
 /* ---------- wiring ---------- */
@@ -739,8 +731,49 @@ document.addEventListener('DOMContentLoaded', async () => {
     padEl.setSelectionRange(start, end);
   });
 
-  $('new').addEventListener('click', newFromPage);
-  $('undoBtn').addEventListener('click', undoDelete);
+  /* New note is always a blank note. The click must not reach the
+     document's click-away handler below: that would close the note it just
+     opened, and an empty note closed is a note thrown away. */
+  $('new').addEventListener('click', (e) => {
+    e.stopPropagation();
+    createNote('', '');
+  });
+  $('undoBtn').addEventListener('click', undoLast);
+
+  /* The pad's text moves into a note of its own and the pad is cleared,
+   * as a draft moves out of a notebook. Undo puts the text back and takes
+   * the note away again. The pad is only cleared once the note is safely
+   * written, so a note too long to sync leaves the pad as it was. */
+  const savePad = $('savePad');
+  const setPad = (text) => {
+    padEl.value = text;
+    clearTimeout(padTimer);
+    padTimer = null;
+    padWrites = padWrites.then(async () => {
+      padCount = (await writePad(text, padCount)).count;
+    });
+    savePad.hidden = !text.trim();
+  };
+  savePad.hidden = !padEl.value.trim();
+  padEl.addEventListener('input', () => { savePad.hidden = !padEl.value.trim(); });
+  savePad.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const text = padEl.value;
+    if (!text.trim()) return;
+    const { title, body } = splitPad(text);
+    const note = await createNote(title, body);
+    if (!note) return;
+    setPad('');
+    offerUndo('Saved to “' + (title || 'Untitled') + '”', async () => {
+      clearTimeout(savers.get(note.id));
+      savers.delete(note.id);
+      notes = notes.filter((n) => n.id !== note.id);
+      if (openId === note.id) openId = null;
+      await remove([NOTE_PREFIX + note.id]);
+      setPad(text);
+    });
+    render();
+  });
 
   const edited = () => {
     const note = notes.find((n) => n.id === openId);

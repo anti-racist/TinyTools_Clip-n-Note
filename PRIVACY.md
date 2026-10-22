@@ -24,7 +24,6 @@ Clip'n'Note is a browser extension published by Maggie Mao.
 | Permission | Why |
 | --- | --- |
 | `storage` | To keep your notes and scratch pad |
-| `clipboardWrite` | To copy a note when you ask |
 
 ## Syncing
 

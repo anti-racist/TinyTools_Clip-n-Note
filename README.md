@@ -2,10 +2,9 @@
 
 A browser notepad that lets users write and save text notes, then find them again without leaving the current tab. 
 
-## What's New in 2.1
+## What's New in 2.1.1
 
-- ✨ The scratch pad can be saved as a note with **Save as note**. The first line becomes the note's name, the rest its content, and the scratch pad is cleared. **Undo** puts the text back.
-- 🐛 **New note** now always opens a blank note. It no longer copies the current page's title and link.
+- ✨ No longer asks for permission to modify data that is copied and pasted. Copying a note works as before.
 
 ## Key Features
 

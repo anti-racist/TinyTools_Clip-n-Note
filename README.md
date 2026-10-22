@@ -2,7 +2,7 @@
 
 A browser notepad that lets users write and save text notes, then find them again without leaving the current tab. 
 
-## What's New in 2.1.1
+## What's New in 2.5
 
 - ✨ No longer asks for permission to modify data that is copied and pasted. Copying a note works as before.
 

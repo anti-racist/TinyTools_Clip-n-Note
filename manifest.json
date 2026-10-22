@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Clip'n'Note",
   "description": "A notepad in your browser: keep notes and a scratch pad, find them by keyword, and copy them in one click.",
-  "version": "2.1.1",
+  "version": "2.5",
   "permissions": [
     "storage"
   ],
